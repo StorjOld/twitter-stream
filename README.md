@@ -1,3 +1,8 @@
+twitter-stream
+==============
+
+Store Twitter streaming API data for testing.
+
 # quick start
 1. Run daemon.py
 2. Login to https://twitter.com with a valid twitter account
