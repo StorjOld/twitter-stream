@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 # requires python 3
-
 import sys
-if sys.version_info.major < 3:
-    print("This script was built on python 3.4.")
-    print("A few modifications can probably make it work on python 2.x.")
-    print("However it will not work as is.\nHave a nice day.")
-    sys.exit(0)
+compat = True
+try:
+    if sys.version_info.major < 3:
+        compat = False
+except NameError:
+    compat = False
+finally:
+    if compat == False:
+        print("This script was built on python 3.4.")
+        print("A few modifications can probably make it work on python 2.x.")
+        print("However it will not work as is.\nHave a nice day.")
+        sys.exit(0)
 
 import json
 import time
