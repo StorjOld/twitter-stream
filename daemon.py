@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 # requires python 3
+"""
+.. module:: daemon
+   :platform: Unix, Windows
+   :synopsis: Manages the uploader and grabber processes, performs configuration on first run
+.. moduleauthor:: Adam Sheesley <odd.meta@gmail.com>
+"""
 import sys
 compat = True
 try:
@@ -47,7 +53,8 @@ def create_grabber(configs, twitter_oauth):
     grabber_heartbeat, b = multiprocessing.Pipe()
     grabber_log_pipe, glp = multiprocessing.Pipe()
     grabber = Grabber(configs, oauth, glp)
-    grabber_process = multiprocessing.Process(target=grabber_runner, daemon=True, args=(grabber,b))
+    grabber_process = multiprocessing.Process( target=grabber_runner, args=(grabber,b,) )
+    grabber_process.daemon = True
     grabber_process.start()
     return grabber_process, grabber_heartbeat, grabber_log_pipe
 
@@ -83,7 +90,8 @@ def create_uploader(configs):
     """
     uploader_log_pipe, ulp = multiprocessing.Pipe()
     uploader = Uploader(configs, ulp)
-    uploader_process = multiprocessing.Process(target=uploader_runner, daemon=True, args=(uploader,))
+    uploader_process = multiprocessing.Process(target=uploader_runner, args=(uploader,))
+    uploader_process.daemon = True
     uploader_process.start()
     return uploader_process, uploader_log_pipe
 
@@ -197,14 +205,20 @@ def start():
 
         # Check if our uploader process is dead the proper way and restart it if it is dead
         if not (uploader_process.is_alive()):
+            if not(configs['quiet']):
+                    print("Upload process cannot connect... restarting upload process.")
             uploader_process, uploader_log_pipe = create_uploader(configs)
 
         # Round about way to check if the grabber process has hung up, kill it if it has hung and restart it
+        # This round-about process is required due to requests literally hanging up the entire process
+        # if a stream stops returning data
         has_beat = grabber_heartbeat.poll()
         if has_beat == True:
             beat = grabber_heartbeat.recv()
             last_beat = time.time()
         if (time.time() - last_beat) > timeout:
+            if not(configs['quiet']):
+                    print("Grabber process has lost connection... restarting grabber process.")
             last_beat = time.time() + 5
             grabber_process.terminate()
             grabber_process, grabber_heartbeat, grabber_log_pipe = create_grabber(configs, twitter_oauth)

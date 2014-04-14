@@ -3,41 +3,25 @@ twitter-stream
 
 Store Twitter streaming API data for testing.
 
-# quick start
-1. Run daemon.py
-2. Login to https://twitter.com with a valid twitter account
-3. Visit https://apps.twitter.com/app in the same browser session you logged in with
-4. Click the "Create New App" button
-5. Enter all required information; Name, Description, and Website
-    this will result in generating the consumer key and secret with the signed in twitter account
-6. You should be taken to the application management screen for the application you just created.
-7. Click on the "API Keys" tab 
-8. Enter the "API key" and API secret into the prompts.
-
-The final config.py setup should look something like
-CONSUMER_KEY = "random_api_key_string_copied_from_twitter"
-CONSUMER_SECRET = "random_api_secret_string_copied_from_twitter"
-
-9. You will be prompted to authorize the application to a given twitter account; you can use the same twitter account you created the API key and secret with
-10. Copy the URL provided by the script and visit it with a browser session that has been logged into twitter.com
-11. Click "Authorize app"
-12. Copy and paste the seven digit pin into the script's prompt and press enter
+# Quick start
+1. Follow the instructions in INSTALL.md
+1. run ./twitter-stream
+2. Follow the prompts to input twitter app keys and to authorize the app with a twitter account. 
+   The app account and the user the app is authorized against can be the same account.
 
 The daemon.py script is now configured for automatic function and should work uninterrupted as long as the application remains authorized by the twitter account and the application's API key and secret are not regenerated.
 
-# theory of operation
-daemon.py acts as a controller that helps initially setup oauth and kicks off grabber.py and uploader.py 
-in their own processes. All twitter data is saved into the directory defined in config.ini. The size of each file uploaded
-is defined by grabber_cut_size in config.ini in kilobytes.
+# Description
+The daemon.py script acts as a controller that promts the user to setup oauth if it is not configured and kicks off grabber.py and uploader.py in their own processes. All twitter data is saved into the directory defined in config.ini. By default this is set to /var/www. Ensure that the user running the script has permission to read and write to this directory. The size of each file uploaded is defined by grabber_cut_size in config.ini in kilobytes. To specify 32 KB files set "grabber_cut_size = 32". To specify 1 MB, set "grabber_cut_size = 1024".
 
-# depends
+# Dependencies
 oauthlib 0.6.1
 https://pypi.python.org/pypi/oauthlib
 
 requests 2.2.1
 https://pypi.python.org/pypi/requests
 
-requests_oauthlib 4.0
+requests_oauthlib 0.4.0
 https://github.com/requests/requests-oauthlib/tree/v0.4.0
 
 # attribution

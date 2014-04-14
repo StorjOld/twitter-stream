@@ -93,8 +93,6 @@ class Uploader(object):
             # If we hit max_retries bail on the upload process
             if upload_success == False:
                 self.log_pipe.send(['error','Connection failure'])
-                if not(self.configs['quiet']):
-                    print("Upload of a file failed %s times, exiting upload process."  % max_retries)
                 sys.exit(1)
             # If we manage to successfully upload the file then close the handle and delete the file
             else:
