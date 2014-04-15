@@ -64,13 +64,19 @@ class Grabber(object):
         on_try = 0
         while stream_success == False and on_try < max_retries:
             if self.configs['verbosity'] and not(self.configs['quiet']):
-                print("on stream try %s" % on_try)
+                print("On stream try %s" % on_try)
             try:
+                if self.configs['verbosity'] and not(self.configs['quiet']):
+                    print("Attempting initial connection to twitter streaming URL %s" % self.url)
                 r = requests.post(url=self.url, auth=self.oauth, stream=True, data={}, timeout=2)
+                if self.configs['verbosity'] and not(self.configs['quiet']):
+                    print("Connected!\n%s - %s" % (r.status_code,r.text) )
                 if r.status_code is not 200:
                     self.log_pipe.send(['error', '%s %s' % ( r.status_code, json.dumps(r.text) )])
                 stream_success = True
             except requests.exceptions.RequestException:
+                if self.configs['verbosity'] and not(self.configs['quiet']):
+                    print("Failed to connect! Trying again...")
                 on_try += 1
 
         # If we failed to open a stream after all our max tries kill the grabber process, daemon is in charge of restarting it

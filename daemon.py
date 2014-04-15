@@ -206,7 +206,7 @@ def start():
         # Check if our uploader process is dead the proper way and restart it if it is dead
         if not (uploader_process.is_alive()):
             if not(configs['quiet']):
-                    print("Upload process cannot connect... restarting upload process.")
+                print("Upload process cannot connect... restarting upload process.")
             uploader_process, uploader_log_pipe = create_uploader(configs)
 
         # Round about way to check if the grabber process has hung up, kill it if it has hung and restart it
@@ -218,7 +218,7 @@ def start():
             last_beat = time.time()
         if (time.time() - last_beat) > timeout:
             if not(configs['quiet']):
-                    print("Grabber process has lost connection... restarting grabber process.")
+                print("Grabber process has lost connection... restarting grabber process.")
             last_beat = time.time() + 5
             grabber_process.terminate()
             grabber_process, grabber_heartbeat, grabber_log_pipe = create_grabber(configs, twitter_oauth)
