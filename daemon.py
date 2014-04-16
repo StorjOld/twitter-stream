@@ -6,6 +6,10 @@
    :synopsis: Manages the uploader and grabber processes, performs configuration on first run
 .. moduleauthor:: Adam Sheesley <odd.meta@gmail.com>
 """
+"""
+TODO: Unify logging and status message printing
+
+"""
 import sys
 compat = True
 try:
@@ -147,9 +151,11 @@ def start():
         configs["quiet"] = args.quiet
 
     if configs['warn']:
+        print("******NOTICE******")
         print("This script saves all keys, secrets, and tokens into configuration files in the same directory.")
         print("If you are working in a shared computing environment please set permissions and umask values to prevent unauthorized access.")
         print("This message will not appear again.")
+        print("******NOTICE******")
         config.set_warn("0")
 
     twitter_oauth = TwitterOauth(configs, configs_api, configs_oauth)
@@ -173,13 +179,13 @@ def start():
     uploader_process, uploader_log_pipe = create_uploader(configs)
 
     if not(configs['quiet']):
-        print("Started and grabbing.\nStatus messages will be shown when a file is rolled.\nEdit config.ini to change script behavior.")
+        print("Started and grabbing.\nEdit config.ini to change script behavior.")
         print("Edit or delete config_twitter_oauth.ini to reconfigure authorized twitter account.")
         print("Edit or delete config_twitter_api.ini to reconfigure twitter application key and secret.")
         print("Ctrl+C to exit.")
 
     # Setup our grabber's heartbeat timeout
-    timeout = 5
+    timeout = 10
     last_beat = time.time()
 
     while True:
@@ -219,7 +225,7 @@ def start():
         if (time.time() - last_beat) > timeout:
             if not(configs['quiet']):
                 print("Grabber process has lost connection... restarting grabber process.")
-            last_beat = time.time() + 5
+            last_beat = time.time() + 10
             grabber_process.terminate()
             grabber_process, grabber_heartbeat, grabber_log_pipe = create_grabber(configs, twitter_oauth)
 

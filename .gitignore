@@ -1,3 +1,8 @@
+
+# Twitter oauth configuration, specific to each user of this script
+config_twitter_api.ini
+config_twitter_oauth.ini
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
