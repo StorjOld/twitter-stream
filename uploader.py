@@ -72,7 +72,6 @@ class Uploader(object):
             to_upload = open( filename, "rb")
 
             # Setup our variables for the upcoming loop
-            upload_success = False
             max_retries = self.configs["upload_retries"]
             on_try = 0
             result = None
@@ -96,26 +95,24 @@ class Uploader(object):
                 if result.status_code == 201:
                     if not (self.log_pipe == None):
                         self.log_pipe.send(['log', '%s %s' % ( result.status_code, json.dumps(result.text) )])
-                    upload_success = True
-                else:
-                    if not (self.log_pipe == None):
-                        self.log_pipe.send(['error', '%s %s' % ( result.status_code, json.dumps(result.text) )])
-
-                # If an upload is successful this is the filehash
-                if self.configs['verbosity'] and not(self.configs['quiet']):
-                    print(result.text)
-                
-                # If we manage to successfully upload the file then close the handle and delete the file
-                else:
+                                    # If an upload is successful this is the filehash
+                    if self.configs['verbosity'] and not(self.configs['quiet']):
+                        print(result.text)
+                    
+                    # If we manage to successfully upload the file then close the handle and delete the file
                     if self.configs['verbosity'] and not(self.configs['quiet']):
                         print("Upload succeeded, deleting %s" % filename)
                     to_upload.close()
                     os.remove(filename)
+                else:
+                    if not (self.log_pipe == None):
+                        self.log_pipe.send(['error', '%s %s' % ( result.status_code, json.dumps(result.text) )])
             else:
                 # If we hit max_retries bail on the upload process
                 if not (self.log_pipe == None):
                     self.log_pipe.send(['error','Upload failed %s times, killing uploader' % max_retries])
                 sys.exit(1)
+
 
     def do_upload(self, url, filehandle):
         """
