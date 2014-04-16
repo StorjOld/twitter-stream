@@ -26,7 +26,6 @@ def get_config():
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
     config_store["grabber_cut_size"] = int(config['DEFAULT']['grabber_cut_size'])
-    config_store["grabber_max_store"] = int(config['DEFAULT']['grabber_max_store'])
     config_store["grabber_storage_directory"] = config['DEFAULT']['grabber_storage_directory']
     config_store["config_twitter_oauth_filename"] = config['DEFAULT']['config_twitter_oauth_filename']
     config_store["config_twitter_api_filename"] = config['DEFAULT']['config_twitter_api_filename']
@@ -40,6 +39,7 @@ def get_config():
     config_store["upload_retries"] = int(config['DEFAULT']['upload_retries'])
     config_store["grabber_retries"] = int(config['DEFAULT']['grabber_retries'])
     config_store["log_directory"] = config['DEFAULT']['log_directory']
+    config_store["tweet_file_prefix"] = config['DEFAULT']['tweet_file_prefix']
     config_api_store = get_api_config(config_store["config_twitter_api_filename"])
     config_oauth_store = get_oauth_config(config_store["config_twitter_oauth_filename"])
     return config_store, config_api_store, config_oauth_store

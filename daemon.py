@@ -1,12 +1,28 @@
 #!/usr/bin/env python
 # requires python 3
+"""
+.. module:: daemon
+   :platform: Unix, Windows
+   :synopsis: Manages the uploader and grabber processes, performs configuration on first run
+.. moduleauthor:: Adam Sheesley <odd.meta@gmail.com>
+"""
+"""
+TODO: Unify logging and status message printing
 
+"""
 import sys
-if sys.version_info.major < 3:
-    print("This script was built on python 3.4.")
-    print("A few modifications can probably make it work on python 2.x.")
-    print("However it will not work as is.\nHave a nice day.")
-    sys.exit(0)
+compat = True
+try:
+    if sys.version_info.major < 3:
+        compat = False
+except NameError:
+    compat = False
+finally:
+    if compat == False:
+        print("This script was built on python 3.4.")
+        print("A few modifications can probably make it work on python 2.x.")
+        print("However it will not work as is.\nHave a nice day.")
+        sys.exit(0)
 
 import json
 import time
@@ -41,7 +57,8 @@ def create_grabber(configs, twitter_oauth):
     grabber_heartbeat, b = multiprocessing.Pipe()
     grabber_log_pipe, glp = multiprocessing.Pipe()
     grabber = Grabber(configs, oauth, glp)
-    grabber_process = multiprocessing.Process(target=grabber_runner, daemon=True, args=(grabber,b))
+    grabber_process = multiprocessing.Process( target=grabber_runner, args=(grabber,b,) )
+    grabber_process.daemon = True
     grabber_process.start()
     return grabber_process, grabber_heartbeat, grabber_log_pipe
 
@@ -77,7 +94,8 @@ def create_uploader(configs):
     """
     uploader_log_pipe, ulp = multiprocessing.Pipe()
     uploader = Uploader(configs, ulp)
-    uploader_process = multiprocessing.Process(target=uploader_runner, daemon=True, args=(uploader,))
+    uploader_process = multiprocessing.Process(target=uploader_runner, args=(uploader,))
+    uploader_process.daemon = True
     uploader_process.start()
     return uploader_process, uploader_log_pipe
 
@@ -133,9 +151,11 @@ def start():
         configs["quiet"] = args.quiet
 
     if configs['warn']:
+        print("******NOTICE******")
         print("This script saves all keys, secrets, and tokens into configuration files in the same directory.")
         print("If you are working in a shared computing environment please set permissions and umask values to prevent unauthorized access.")
         print("This message will not appear again.")
+        print("******NOTICE******")
         config.set_warn("0")
 
     twitter_oauth = TwitterOauth(configs, configs_api, configs_oauth)
@@ -159,13 +179,13 @@ def start():
     uploader_process, uploader_log_pipe = create_uploader(configs)
 
     if not(configs['quiet']):
-        print("Started and grabbing.\nStatus messages will be shown when a file is rolled.\nEdit config.ini to change script behavior.")
+        print("Started and grabbing.\nEdit config.ini to change script behavior.")
         print("Edit or delete config_twitter_oauth.ini to reconfigure authorized twitter account.")
         print("Edit or delete config_twitter_api.ini to reconfigure twitter application key and secret.")
         print("Ctrl+C to exit.")
 
     # Setup our grabber's heartbeat timeout
-    timeout = 5
+    timeout = 10
     last_beat = time.time()
 
     while True:
@@ -191,15 +211,21 @@ def start():
 
         # Check if our uploader process is dead the proper way and restart it if it is dead
         if not (uploader_process.is_alive()):
+            if not(configs['quiet']):
+                print("Upload process cannot connect... restarting upload process.")
             uploader_process, uploader_log_pipe = create_uploader(configs)
 
         # Round about way to check if the grabber process has hung up, kill it if it has hung and restart it
+        # This round-about process is required due to requests literally hanging up the entire process
+        # if a stream stops returning data
         has_beat = grabber_heartbeat.poll()
         if has_beat == True:
             beat = grabber_heartbeat.recv()
             last_beat = time.time()
         if (time.time() - last_beat) > timeout:
-            last_beat = time.time() + 5
+            if not(configs['quiet']):
+                print("Grabber process has lost connection... restarting grabber process.")
+            last_beat = time.time() + 10
             grabber_process.terminate()
             grabber_process, grabber_heartbeat, grabber_log_pipe = create_grabber(configs, twitter_oauth)
 
