@@ -26,23 +26,23 @@ The daemon.py script is now configured for automatic function and should work un
 # Configuration files
 ## config.ini
 ### Twitter Grabber Configuration
-* `grabber_cut_size` The size of files to be uploaded to twitter in kilobytes
-* `grabber_storage_directory` The directory to store temporary twitter files in
-* `stream_url` The URL that the grabber uses to stream tweets from
-* `grabber_retries` The number of times the Grabber will attempt to reconnect to the stream_url on initial connection
-* `config_twitter_oauth_filename` The name of the file that twitter oauth token and secret will be stored in
-* `grabber_temp_file` The working file that a Grabber object uses to store tweets before the cut size has been reached
-* `config_twitter_api_filename` The name of the file that twitter API key and secret will be stored in
+* `grabber_cut_size` Size of files to be uploaded to twitter in kilobytes
+* `grabber_storage_directory` Directory to store temporary twitter files in
+* `stream_url` URI that the grabber uses to stream tweets from
+* `grabber_retries` Times the Grabber will attempt to reconnect to the stream_url on initial connection
+* `config_twitter_oauth_filename` Name of the file that twitter oauth token and secret will be stored in
+* `grabber_temp_file` File the Grabber uses to store tweets before the cut size has been reached
+* `config_twitter_api_filename` Name of the file that twitter API key and secret will be stored in
 * `request_token_url` Part of twitter's oauth infrastructure, do not change unless twitter has changed this
 * `authorize_url` Part of twitter's oauth infrastructure, do not change unless twitter has changed this
 * `access_token_url` Part of twitter's oauth infrastructure, do not change unless twitter has changed this
 
 ### Uploader Configuration
-* `upload_url` The storj webnode URI to attempt an upload to
-* `upload_retries` The number of times to attempt to retry an upload to the storj webnode before restarting process
+* `upload_url` Storj webnode URI to attempt an upload to
+* `upload_retries` Number of times to attempt to retry an upload to the webnode before restarting process
 
 ### General Script Configuration
-* `log_directory` The directory that log files are stored in
+* `log_directory` Directory that log files are stored in
 * `tweet_file_prefix` An arbitrary prefix for all files that an Uploader will scoop up
 * `warn` Show the warning message about key, secret, and token storage on the filesystem
 
