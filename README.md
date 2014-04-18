@@ -50,7 +50,7 @@ The daemon.py script is now configured for automatic function and should work un
 # Operational Details
 The `daemon.py` script acts as a controller that prompts the user to setup oauth if it is not configured and kicks off `grabber.py` and `uploader.py` in their own processes. Twitter data is then streamed into files by the grabber process. The uploader process constantly scans for files that are complete, uploading any completed files that it finds. 
 
-In the event of a connection dropout, from either twitter, the webnode, or both, each process will attempt to reconnect a set number of times and then terminate if it is unsuccessful. The daemon constantly checks for a dead uploader process and a dead grabber process; restarting the processes as necessary. The grabber and uploader scripts will continue to run until the process running daemon is killed.
+In the event of a connection dropout, from either twitter, the webnode, or both, each process will attempt to reconnect a set number of times and then terminate if it is unsuccessful. The daemon constantly checks for a dead uploader process and a dead grabber process; restarting the processes as necessary. The `grabber.py` and `uploader.py` scripts will continue to run until the process running `daemon.py` is killed.
 
 Both `grabber.py` and `uploader.py` can be run independently if the proper configuration information is present in `config.ini`, `config_twitter_api.ini`, and `config_twitter_oauth.ini`. This can be useful for uploading files that were not created with `grabber.py` or streaming twitter data into files for purposes other than uploading to a webnode.
 
