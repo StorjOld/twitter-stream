@@ -3,7 +3,7 @@ twitter-stream
 
 Store Twitter streaming API data for testing.
 
-These scripts connect to https://stream.twitter.com/1.1/statuses/sample.json, store twitter data in files that are approximately 1MB large, and then uploads all finished files to twitter.
+These scripts connect to https://stream.twitter.com/1.1/statuses/sample.json, store twitter data in files that are approximately 1MB large, and then uploads all finished files to a storj web node.
 
 Designed to run unattended for an extended period of time after initial oauth setup. Information provided in initial oauth setup is saved to disk and used on all further script runs. Scripts are designed to gracefully handle intermittent connection issues with Twitter, Storj nodes, or both.
 
@@ -26,7 +26,7 @@ The daemon.py script is now configured for automatic function and should work un
 # Configuration files
 ## config.ini
 ### Twitter Grabber Configuration
-* `grabber_cut_size` Size of files to be uploaded to twitter in kilobytes
+* `grabber_cut_size` Size of files to be uploaded to webnode in kilobytes
 * `grabber_storage_directory` Directory to store temporary twitter files in
 * `stream_url` URI that the grabber uses to stream tweets from
 * `grabber_retries` Times the Grabber will attempt to reconnect to the stream_url on initial connection
